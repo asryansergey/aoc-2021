@@ -1,5 +1,4 @@
-from typing import List, Tuple
-import numpy as np
+from typing import List
 
 
 def process_input(file_name):
@@ -18,8 +17,14 @@ def process_input(file_name):
         cards.append(current_card.copy())
         return game_numbers, cards
 
+def update_cards(number_called: int, cards: List[List[List[List[int]]]]):
+    for card in cards:
+        for line in card:
+            for elem in line:
+                if number_called == elem[0]:
+                    elem[1] = 1
 
-def calc_winning_board_value(random_numbers: List[int], cards) -> int:
+def calc_winning_board_value(random_numbers: List[int], cards: List[List[List[List[int]]]]) -> dict[int, int]:
     wins = {}
     trace = []
     for key_idx, num in enumerate(random_numbers):
@@ -27,16 +32,10 @@ def calc_winning_board_value(random_numbers: List[int], cards) -> int:
             if card_num in trace:
                 continue
             for idx, line in enumerate(card):
-                for elem in line:
-                    if all([x[1] for x in line]):
-                        score = 0
-                        for i, vals in enumerate(card):
-                            score += sum([x[0] for x in card[i] if x[1] == 0])
-                        wins[key_idx] = (
-                            (score * random_numbers[key_idx - 1]),
-                            random_numbers[key_idx - 1],
-                        )
-                        trace.append(card_num)
+                if all([x[1] for x in line]):
+                    score = sum([sum([x[0] for x in row if x[1] == 0]) for row in card])
+                    wins[key_idx] = score * random_numbers[key_idx - 1]
+                    trace.append(card_num)
 
             for i in range(5):
                 win = True
@@ -45,20 +44,11 @@ def calc_winning_board_value(random_numbers: List[int], cards) -> int:
                         win = False
                         break
                 if win:
-                    score = 0
-                    for vals in card:
-                        score += sum([x[0] for x in vals if x[1] == 0])
-                    wins[key_idx] = (
-                        (score * random_numbers[key_idx - 1]),
-                        random_numbers[key_idx - 1],
-                    )
+                    score = sum([sum([x[0] for x in row if x[1] == 0]) for row in card])
+                    wins[key_idx] = score * random_numbers[key_idx - 1]
                     trace.append(card_num)
 
-        for card in cards:
-            for line in card:
-                for elem in line:
-                    if num == elem[0]:
-                        elem[1] = 1
+        update_cards(num, cards)
     return wins
 
 
@@ -66,8 +56,8 @@ if __name__ == "__main__":
     random_numbers, cards = process_input("./input.in")
     wins = calc_winning_board_value(random_numbers, cards)
     first_idx = min(list(wins))
-    first_win_score = wins[first_idx][0]
+    first_win_score = wins[first_idx]
     print("[1] First win score: ", first_win_score)
     last_idx = max(list(wins))
-    last_win_score = wins[last_idx][0]
+    last_win_score = wins[last_idx]
     print("[2] Last win score: ", last_win_score)
