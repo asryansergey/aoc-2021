@@ -17,12 +17,14 @@ def process_input(file_name):
         cards.append(current_card.copy())
         return game_numbers, cards
 
+
 def update_cards(number_called: int, cards: List[List[List[List[int]]]]):
     for card in cards:
         for line in card:
             for elem in line:
                 if number_called == elem[0]:
                     elem[1] = 1
+
 
 def calc_winning_board_value(random_numbers: List[int], cards: List[List[List[List[int]]]]) -> dict[int, int]:
     wins = {}
