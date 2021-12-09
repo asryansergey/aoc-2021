@@ -1,4 +1,5 @@
 from typing import List
+from collections import defaultdict, Counter
 
 
 def process_input(file_name):
@@ -6,16 +7,28 @@ def process_input(file_name):
         return [int(num.strip()) for num in records.readline().split(",")]
 
 
-def count_lanternfish_part_1(ages: List[int], days: int) -> int:
+def count_lanternfish_part_1(population: List[int], days: int) -> int:
     for day in range(days):
-        ages[:] = [age - 1 for age in ages if age != -1]
-        for i, _ in enumerate(ages):
-            if ages[i] == -1:
-                ages[i] = 6
-                ages.append(8)
-    return len(ages)
+        population[:] = [age - 1 for age in population if age != -1]
+        for i, _ in enumerate(population):
+            if population[i] == -1:
+                population[i] = 6
+                population.append(8)
+    return len(population)
+
+
+def count_lanternfish_part_2(population: List[int], days: int) -> int:
+    population_counter = Counter(population)
+    occurrences = [population_counter[idx] for idx in [x for x in range(9)]]
+    for day in range(days):
+        occurrences.append(occurrences[0])
+        occurrences.pop(0)
+        occurrences[6] += occurrences[8]
+    return sum(occurrences)
 
 
 if __name__ == "__main__":
     age_records = process_input("./input.in")
-    print("[1] Number of fishes: ", count_lanternfish_part_1(age_records, days=80))
+    print("[1] Number of lanternfishes: ", count_lanternfish_part_1(age_records, days=80))
+    age_records = process_input("./input.in")
+    print("[2] Number of lanternfishes: ", count_lanternfish_part_2(age_records, days=256))
