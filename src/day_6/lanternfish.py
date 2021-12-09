@@ -1,5 +1,5 @@
 from typing import List
-from collections import defaultdict, Counter
+from collections import Counter
 
 
 def process_input(file_name):
@@ -21,14 +21,13 @@ def count_lanternfish_part_2(population: List[int], days: int) -> int:
     population_counter = Counter(population)
     occurrences = [population_counter[idx] for idx in [x for x in range(9)]]
     for day in range(days):
-        occurrences.append(occurrences[0])
-        occurrences.pop(0)
+        occurrences = occurrences[1:] + [occurrences[0]]
         occurrences[6] += occurrences[8]
     return sum(occurrences)
 
 
 if __name__ == "__main__":
-    age_records = process_input("./input.in")
+    age_records = process_input("input.in")
     print("[1] Number of lanternfishes: ", count_lanternfish_part_1(age_records, days=80))
-    age_records = process_input("./input.in")
+    age_records = process_input("input.in")
     print("[2] Number of lanternfishes: ", count_lanternfish_part_2(age_records, days=256))
